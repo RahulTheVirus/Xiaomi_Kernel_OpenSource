@@ -1343,7 +1343,11 @@ static ssize_t fuse_dev_splice_read(struct file *in, loff_t *ppos,
 		buf->page = bufs[page_nr].page;
 		buf->offset = bufs[page_nr].offset;
 		buf->len = bufs[page_nr].len;
-		buf->ops = &nosteal_pipe_buf_ops;
+		/*
+		 * Need to be careful about this.  Having buf->ops in module
+ 		 * code can Oops if the buffer persists after module unload.
+ 		 */
+ 		buf->ops = &nosteal_pipe_buf_ops;
 
 		pipe->nrbufs++;
 		page_nr++;
