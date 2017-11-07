@@ -47,9 +47,9 @@ export CCACHE_DIR=$CCACHE
 [ -x "${CROSS_COMPILE}gcc" ] ||
 ABORT "Unable to find gcc cross-compiler at location: ${CROSS_COMPILE}gcc"
 
-[ "$TARGET" ] || TARGET=android
+[ "$TARGET" ] || TARGET=user
 [ "$1" ] && DEVICE=$1
-[ "$DEVICE" ] || DEVICE=tegra12
+[ "$DEVICE" ] || DEVICE=mocha
 
  
   DEFCONFIG=${DEVICE}_${TARGET}_defconfig
