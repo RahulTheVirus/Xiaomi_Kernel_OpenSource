@@ -293,3 +293,4 @@ else
 
  fi
    
+cd $RDIR
