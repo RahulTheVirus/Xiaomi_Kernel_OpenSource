@@ -1264,7 +1264,7 @@ static int crypt_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		iv_size_padding = crypto_ablkcipher_alignmask(cc->tfm);
 	}
 	cc->req_pool = mempool_create_kmalloc_pool(MIN_IOS, cc->dmreq_start +
-			sizeof(struct dm_crypt_request) + cc->iv_size);
+			sizeof(struct dm_crypt_request) + iv_size_padding + cc->iv_size);
 	if (!cc->req_pool) {
 		ti->error = "Cannot allocate crypt request mempool";
 		goto bad;
