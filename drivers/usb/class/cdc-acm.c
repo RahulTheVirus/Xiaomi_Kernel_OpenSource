@@ -253,13 +253,10 @@ static int acm_write_start(struct acm *acm, int wbn)
 		wb->urb->dev = acm->dev;
 		usb_anchor_urb(wb->urb, &acm->deferred);
 #else
-		if (!acm->delayed_wb)
-			acm->delayed_wb = wb;
-		else
-			usb_autopm_put_interface_async(acm->control);
+		usb_anchor_urb(wb->urb, &acm->delayed);
 #endif
 		spin_unlock_irqrestore(&acm->write_lock, flags);
-		return 0;	/* A white lie */
+		return 0;
 	}
 	usb_mark_last_busy(acm->dev);
 #ifdef CONFIG_PM
@@ -1585,11 +1582,10 @@ static int acm_resume(struct usb_interface *intf)
 {
 	struct acm *acm = usb_get_intfdata(intf);
 	int rv = 0;
-	int cnt;
 #ifdef CONFIG_PM
 	struct urb *res;
 #else
-	struct acm_wb *wb;
+	struct urb *urb;
 #endif
 
 	if (!acm) {
@@ -1599,19 +1595,18 @@ static int acm_resume(struct usb_interface *intf)
 
 	spin_lock_irq(&acm->read_lock);
 	if (acm->susp_count > 0) {
-		acm->susp_count -= 1;
-		cnt = acm->susp_count;
+		spin_lock(&acm->write_lock);
 	} else {
 		spin_unlock_irq(&acm->read_lock);
 		return 0;
 	}
 	spin_unlock_irq(&acm->read_lock);
 
-	if (cnt)
-		return 0;
+	if (--acm->susp_count)
+		goto out;
 
 	if (test_bit(ASYNCB_INITIALIZED, &acm->port.flags)) {
-		rv = usb_submit_urb(acm->ctrlurb, GFP_NOIO);
+		rv = usb_submit_urb(acm->ctrlurb, GFP_ATOMIC);
 		spin_lock_irq(&acm->write_lock);
 #ifdef CONFIG_PM
 		while ((res = usb_get_from_anchor(&acm->deferred))) {
@@ -1626,15 +1621,13 @@ static int acm_resume(struct usb_interface *intf)
 				acm_write_done(acm, res->context);
 			}
 		}
-		spin_unlock_irq(&acm->write_lock);
 #else
-		if (acm->delayed_wb) {
-			wb = acm->delayed_wb;
-			acm->delayed_wb = NULL;
-			spin_unlock_irq(&acm->write_lock);
-			acm_start_wb(acm, wb);
-		} else {
-			spin_unlock_irq(&acm->write_lock);
+		for (;;) {
+			urb = usb_get_from_anchor(&acm->delayed);
+			if (!urb)
+				break;
+
+			acm_start_wb(acm, urb->context);
 		}
 #endif
 
