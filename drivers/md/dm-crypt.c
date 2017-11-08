@@ -41,6 +41,7 @@ struct convert_context {
 	unsigned int idx_out;
 	sector_t cc_sector;
 	atomic_t cc_pending;
+	struct ablkcipher_request *req;
 };
 
 /*
