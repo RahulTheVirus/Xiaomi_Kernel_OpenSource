@@ -508,7 +508,7 @@ static int crypt_convert(struct crypt_config *cc,
 
 		atomic_inc(&ctx->cc_pending);
 
-		r = crypt_convert_block(cc, ctx, cc->req);
+		r = crypt_convert_block(cc, ctx, ctx->req);
 
 		switch (r) {
 		/* async */
