@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm 3.10.61 Kernel Configuration
+# Linux/arm 3.10.96 Kernel Configuration
 #
 CONFIG_ARM=y
 CONFIG_ARM_HAS_SG_CHAIN=y
@@ -4458,3 +4458,8 @@ CONFIG_NLS_CODEPAGE_950=y
 CONFIG_NLS_ASCII=y
 CONFIG_NLS_ISO8859_1=y
 CONFIG_NLS_UTF8=y
+
+#
+# Extra..
+#
+CONFIG_ZRAM=y
