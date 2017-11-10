@@ -117,8 +117,8 @@ MAKE_DTB()
 {
 	echo "Creating dtb for $LOCALVERSION..."
 	
-	make -C "$RDIR" O=build "tegra124-mocha.dtb" \
-		|| ABORT "Failed to make tegra124-mocha.dtb.."
+	make -C "$RDIR" O=build "${DTBNAME}" \
+		|| ABORT "Failed to make ${DTBNAME} .."
 		
 		
          if [ -d $DTB ] ; then
@@ -180,8 +180,9 @@ if [ -d $FWR ]; then
  . build.sh
  
  if [ -f $TV/sign/$ZS ]; then
+    rm -r $RDIR/*.zip
     chmod 777 $TV/sign/$ZS
-    cp -R $TV/sign/$ZS $RDIR/${FLEVOR}_${DEVICE}_${LOCALVERSION}-signed.zip
+    cp -R $TV/sign/$ZS $RDIR/${FLEVOR}_${LOCALVERSION}-signed.zip
 
    
     fi
