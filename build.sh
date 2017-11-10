@@ -21,7 +21,6 @@ FWR=$RDIR/build/lib/firmware
 MOD=$RDIR/build/lib/modules
 TV=$RDIR/build/thevirus
 ZS=Thevirus_kernel_flasher-signed.zip
-ZIP=${FLEVOR}_${DEVICE}_${LOCALVERSION}-signed.zip
 CPU_THREADS=$(grep -c "processor" /proc/cpuinfo)
 # amount of cpu threads to use in kernel make process
 THREADS=$((CPU_THREADS + 1))
@@ -182,7 +181,7 @@ if [ -d $FWR ]; then
  
  if [ -f $TV/sign/$ZS ]; then
     chmod 777 $TV/sign/$ZS
-    cp -R $TV/sign/$ZS $RDIR/$ZIP
+    cp -R $TV/sign/$ZS $RDIR/${FLEVOR}_${DEVICE}_${LOCALVERSION}-signed.zip
 
    
     fi
