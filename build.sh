@@ -162,7 +162,7 @@ if [ -d $MOD ]; then
          
       fi 
      
-   if [ -d $DTB/default.dtb ]; then
+   if [ -f $DTB/default.dtb ]; then
     cp $DTB/default.dtb $TV/src/default.dtb 
          
       fi 
