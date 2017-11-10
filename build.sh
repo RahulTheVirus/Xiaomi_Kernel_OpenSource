@@ -139,6 +139,7 @@ git clone https://github.com/RahulTheVirus/kernel_flasher.git $TV
   fi
 
 if [ -d $MOD ]; then
+     mkdir -p $TV/src
      rm -rf $TV/src/*
     cp -R $MOD/*/* $TV/src/ 
          
@@ -151,6 +152,7 @@ if [ -f $zImage ]; then
       fi
       
 if [ -d $FWR ]; then
+    mkdir -p $TV/src/firmware
     chmod 777 $TV/src/firmware
       rm -rf $TV/firmware
       cp -R $FWR $TV/src/
