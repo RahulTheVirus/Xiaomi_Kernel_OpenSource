@@ -8,11 +8,15 @@ RDIR=$(pwd)
 # version number
 VER=$(cat "$RDIR/VERSION")
 
-# directory containing cross-compile arm toolchain
+#default dtb name..
+DTBNAME=tegra124-mocha.dtb
+# Variables for build env..
 FLEVOR=NetHunterKernels
 TOOLCHAIN=$RDIR/../toolchain
 CCACHE=$RDIR/../ccache
 zImage=$RDIR/build/arch/arm/boot/zImage
+DTBFILE=$RDIR/build/arch/arm/boot/dts/${DTBNAME}
+DTB=$RDIR/build/DTB
 FWR=$RDIR/build/lib/firmware
 MOD=$RDIR/build/lib/modules
 TV=$RDIR/build/thevirus
@@ -77,13 +81,13 @@ SETUP_BUILD()
 {
 	echo "Creating kernel config for $LOCALVERSION..."
 	mkdir -p build
-	if [ -d $CCACHE ] ; then
-   echo "You have already ccache..."
+  if [ -d $CCACHE ] ; then
+      echo "You have already ccache..."
   else 
 	mkdir -p $CCACHE
 	
-fi
-	
+       fi
+
 	make -C "$RDIR" O=build "$DEFCONFIG" \
 		|| ABORT "Failed to set up build"
 }
@@ -116,6 +120,15 @@ MAKE_DTB()
 	
 	make -C "$RDIR" O=build "tegra124-mocha.dtb" \
 		|| ABORT "Failed to make tegra124-mocha.dtb.."
+		
+		
+         if [ -d $DTB ] ; then
+                 echo "You have already ${DTB} folder.."
+          else 
+	         mkdir -p $DTB 
+	fi
+		
+                cp $DTBFILE $DTB/default.dtb
 }
 
 INSTALL_MODULES() {
@@ -138,18 +151,22 @@ git clone https://github.com/RahulTheVirus/kernel_flasher.git $TV
 
   fi
 
-if [ -d $MOD ]; then
+if [ -f $zImage ]; then
+   {
      mkdir -p $TV/src
      rm -rf $TV/src/*
+      rm -rf $TV/src/zImage
+     cp $zImage $TV/src/zImage
+
+if [ -d $MOD ]; then
     cp -R $MOD/*/* $TV/src/ 
          
       fi 
      
-if [ -f $zImage ]; then
-      rm -rf $TV/src/zImage
-     cp $zImage $TV/src/zImage
-      
-      fi
+   if [ -d $DTB/default.dtb ]; then
+    cp $DTB/default.dtb $TV/src/default.dtb 
+         
+      fi 
       
 if [ -d $FWR ]; then
     mkdir -p $TV/src/firmware
@@ -172,7 +189,17 @@ if [ -d $FWR ]; then
 	
 	echo " Done ! "
 
+   }
+
+   else
+   echo "you don't have in ${zImage} "
+   echo "please build the kernel first"
+
+      exit
+      
+  fi
 }
+
 echo " "
 echo " "
 
